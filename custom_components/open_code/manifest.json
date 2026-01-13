@@ -1,0 +1,14 @@
+{
+  "domain": "open_code",
+  "name": "OpenCode",
+  "version": "1.0.0",
+  "after_dependencies": ["assist_pipeline", "intent"],
+  "codeowners": ["@airy10"],
+  "config_flow": true,
+  "dependencies": ["conversation"],
+  "documentation": "https://www.home-assistant.io/integrations/open_code",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "quality_scale": "bronze",
+  "requirements": ["openai>=1.0.0"]
+}
