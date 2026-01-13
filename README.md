@@ -26,7 +26,7 @@ Manual configuration steps:
 
 The API key is used to authenticate requests to OpenCode. To generate an API key:
 
-1. Log in to [OpenCode](https://opencode.ai/) or sign up for an account.
+1. Log in to [OpenCode Zen](https://opencode.ai/zen) or sign up for an account.
 2. Go to the **API Keys** section in your account settings.
 3. Select **Create API Key**.
 4. Give the key a name and configure any necessary limits.
