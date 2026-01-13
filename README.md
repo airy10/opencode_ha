@@ -1,6 +1,7 @@
 # OpenCode Home Assistant Integration
 
 This integration allows you to use the OpenCode API as a conversation agent in Home Assistant.
+The code is based on the official Open Router component.
 
 ## Installation
 
