@@ -6,9 +6,9 @@
   "codeowners": ["@airy10"],
   "config_flow": true,
   "dependencies": ["conversation"],
-  "documentation": "https://www.home-assistant.io/integrations/open_code",
+  "documentation": "https://github.com/airy10/opencode_ha",
+  "issue_tracker": "https://github.com/airy10/opencode_ha/issues",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "quality_scale": "bronze",
   "requirements": ["openai>=1.0.0"]
 }
