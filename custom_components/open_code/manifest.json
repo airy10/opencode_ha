@@ -1,14 +1,14 @@
 {
   "domain": "open_code",
   "name": "OpenCode",
-  "version": "1.0.0",
   "after_dependencies": ["assist_pipeline", "intent"],
   "codeowners": ["@airy10"],
   "config_flow": true,
   "dependencies": ["conversation"],
   "documentation": "https://github.com/airy10/opencode_ha",
-  "issue_tracker": "https://github.com/airy10/opencode_ha/issues",
   "integration_type": "service",
   "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/airy10/opencode_ha/issues",
   "requirements": ["openai>=1.0.0"]
+  "version": "1.0.0",
 }
