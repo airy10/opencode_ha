@@ -18,11 +18,19 @@ type OpenCodeConfigEntry = ConfigEntry[AsyncOpenAI]
 OPENCODE_BASE_URL = "https://opencode.ai/zen/v1"
 
 
+def _create_client(api_key: str) -> AsyncOpenAI:
+    """Create OpenAI client outside the event loop."""
+    return AsyncOpenAI(
+        base_url=OPENCODE_BASE_URL,
+        api_key=api_key,
+    )
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: OpenCodeConfigEntry) -> bool:
     """Set up OpenCode from a config entry."""
-    client = AsyncOpenAI(
-        base_url=OPENCODE_BASE_URL,
-        api_key=entry.data[CONF_API_KEY],
+    client = await hass.async_add_executor_job(
+        _create_client,
+        entry.data[CONF_API_KEY],
     )
 
     try:
