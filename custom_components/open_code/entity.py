@@ -25,7 +25,11 @@ from openai.types.chat.chat_completion_message_function_tool_call_param import F
 from openai.types.shared_params import FunctionDefinition, ResponseFormatJSONSchema
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 import voluptuous as vol
-from voluptuous_openapi import convert
+
+try:
+    from probatio import to_openapi as _to_openapi
+except ImportError:
+    from voluptuous_openapi import convert as _to_openapi  # type: ignore[no-redef]
 
 from homeassistant.components import conversation
 from homeassistant.config_entries import ConfigSubentry
@@ -34,6 +38,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, llm
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.json import json_dumps
 
 from . import OpenCodeConfigEntry
 from .const import DOMAIN, LOGGER
@@ -71,7 +76,7 @@ def _format_structured_output(
         "name": name,
         "strict": True,
     }
-    result_schema = convert(
+    result_schema = _to_openapi(
         schema,
         custom_serializer=(
             llm_api.custom_serializer if llm_api else llm.selector_serializer
@@ -89,9 +94,13 @@ def _format_tool(
     custom_serializer: Callable[[Any], Any] | None,
 ) -> ChatCompletionFunctionToolParam:
     """Format tool specification."""
+    unsupported_keys = {"oneOf", "anyOf", "allOf"}
+    schema = _to_openapi(tool.parameters, custom_serializer=custom_serializer)
+    schema = {k: v for k, v in schema.items() if k not in unsupported_keys}
+
     tool_spec = FunctionDefinition(
         name=tool.name,
-        parameters=convert(tool.parameters, custom_serializer=custom_serializer),
+        parameters=schema,
     )
     if tool.description:
         tool_spec["description"] = tool.description
@@ -107,7 +116,7 @@ def _convert_content_to_chat_message(
         return ChatCompletionToolMessageParam(
             role="tool",
             tool_call_id=content.tool_call_id,
-            content=json.dumps(content.tool_result),
+            content=json_dumps(content.tool_result),
         )
 
     role: Literal["user", "assistant", "system"] = content.role
@@ -128,7 +137,7 @@ def _convert_content_to_chat_message(
                     type="function",
                     id=tool_call.id,
                     function=Function(
-                        arguments=json.dumps(tool_call.tool_args),
+                        arguments=json_dumps(tool_call.tool_args),
                         name=tool_call.tool_name,
                     ),
                 )
@@ -290,6 +299,10 @@ class OpenCodeEntity(Entity):
             except openai.OpenAIError as err:
                 LOGGER.error("Error talking to API: %s", err)
                 raise HomeAssistantError("Error talking to API") from err
+
+            if not result.choices:
+                LOGGER.error("API returned empty choices")
+                raise HomeAssistantError("API returned empty response")
 
             result_message = result.choices[0].message
 
